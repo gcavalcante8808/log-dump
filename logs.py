@@ -61,7 +61,7 @@ class AuditFailureDump(object):
                     # We need to convert the TimeGenerated 'Pyttime' type into Datetime to use the compare using timedelta nearly there.
                     event_time = self.convert_time(event.TimeGenerated.Format())
 
-                    if event.EventID == 4768 and (event_time >= self.base_time) and (event_time < self.end_time):
+                    if (event.EventID == 4768 or event.EventID == 529) and (event_time >= self.base_time) and (event_time < self.end_time):
                     # write the result into the log file.
                         file.write(event.TimeGenerated.Format())
                         file.write(',')
