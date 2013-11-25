@@ -26,6 +26,13 @@ class AuditFailureDump(object):
             print ("A data informada não está no formado DIA/MES/ANO HORA:MINUTO - Ex: 01/01/01 01:01")
             exit()
             
+    def convert_time(self, pytime):
+        '''
+        Convert PyTime Formated Strings into DateTimeObjects
+        '''
+        event_time = datetime.datetime.strptime(pytime, '%m/%d/%y %H:%M:%S')
+        return event_time
+    
     def dump_log(self):
             # Handle and flags needed for the search.
         hand = win32evtlog.OpenEventLog(None, 'Security')
@@ -45,18 +52,22 @@ class AuditFailureDump(object):
                 events = win32evtlog.ReadEventLog(hand, flags, 0)
                 #if we dont have more events to iter over, break.
                 if not events: break
+                # If the first event in the list have a generated time greater than end_time, we quit.
+                if self.convert_time(events[0].TimeGenerated.Format()) > self.end_time: break
                 i = i+len(events)
                 # Time provided by the user.
                 # base_time = (datetime.datetime(2013,11,25,16,00))
                 for event in events:
                     # We need to convert the TimeGenerated 'Pyttime' type into Datetime to use the compare using timedelta nearly there.
-                    event_time = datetime.datetime.strptime(event.TimeGenerated.Format(), '%m/%d/%y %H:%M:%S')
+                    event_time = self.convert_time(event.TimeGenerated.Format())
+
                     if event.EventID == 4768 and (event_time >= self.base_time) and (event_time < self.end_time):
                     # write the result into the log file.
                         file.write(event.TimeGenerated.Format())
                         file.write(',')
                         file.write(str(event.StringInserts))
                         file.write('\n')
+
         # Close the handler.
         win32evtlog.CloseEventLog(hand)
 
@@ -65,6 +76,6 @@ if __name__ == '__main__':
     parser.add_argument('-sd', '--StartDate', required=True)
     parser.add_argument('-ed', '--EndDate', required=True)
     args = parser.parse_args()
-    
+
     d = AuditFailureDump(args.StartDate, args.EndDate)
     d.dump_log()
