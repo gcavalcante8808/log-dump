@@ -23,7 +23,7 @@ class AuditFailureDump(object):
             self.base_time = datetime.datetime.strptime(StartDate, "%d/%m/%y %H:%M")
             self.end_time = datetime.datetime.strptime(EndDate, "%d/%m/%y %H:%M")
         except ValueError as e:
-            print ("A data informada não está no formado DIA/MES/ANO HORA:MINUTO - Ex: 01/01/01 01:01")
+            print ("A data informada não está no formado DIA/MES/ANO HORA:MINUTO - Ex: 01/01/01 01:01. Erro: {e}".format(e=e))
             exit()
             
     def convert_time(self, pytime):
@@ -34,7 +34,7 @@ class AuditFailureDump(object):
         return event_time
     
     def dump_log(self):
-            # Handle and flags needed for the search.
+        # Handle and flags needed for the search.
         hand = win32evtlog.OpenEventLog(None, 'Security')
         flags = win32evtlog.EVENTLOG_FORWARDS_READ|win32evtlog.EVENTLOG_SEQUENTIAL_READ|win32evtlog.EVENTLOG_AUDIT_FAILURE|win32evtlog.EVENTLOG_INFORMATION_TYPE
         num = win32evtlog.GetNumberOfEventLogRecords(hand)
@@ -51,12 +51,12 @@ class AuditFailureDump(object):
             for i in xrange(num):
                 events = win32evtlog.ReadEventLog(hand, flags, 0)
                 #if we dont have more events to iter over, break.
-                if not events: break
+                if not events: 
+                    break
                 # If the first event in the list have a generated time greater than end_time, we quit.
-                if self.convert_time(events[0].TimeGenerated.Format()) > self.end_time: break
+                if self.convert_time(events[0].TimeGenerated.Format()) > self.end_time: 
+                    break
                 i = i+len(events)
-                # Time provided by the user.
-                # base_time = (datetime.datetime(2013,11,25,16,00))
                 for event in events:
                     # We need to convert the TimeGenerated 'Pyttime' type into Datetime to use the compare using timedelta nearly there.
                     event_time = self.convert_time(event.TimeGenerated.Format())
