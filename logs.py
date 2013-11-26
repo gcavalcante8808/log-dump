@@ -46,6 +46,10 @@ class AuditFailureDump(object):
         yield win32evtlog.ReadEventLog(self.hand, self.flags, 0)
 
     def filter_and_write_log(self):
+        '''
+        The method will use the read_log_entry method to get the log entries, then it will filter for the relevant
+        EventID's and write it into a log.
+        '''
         with open('logon_failure.log', 'w') as file:
             while True:
                 events = self.read_log_entry().next()
