@@ -51,6 +51,7 @@ class AuditFailureDump(object):
         EventID's and write it into a log.
         '''
         with open('logon_failure.log', 'w') as file:
+            file.write('EventID, SID, Principal, Ticket Options, Codigo de Falha, Preauth Type, IP\n')
             while True:
                 events = self.read_log_entry().next()
                 
@@ -58,7 +59,7 @@ class AuditFailureDump(object):
                 
                 for event in events:
                     event_time = self.convert_time(event.TimeGenerated.Format())
-                    if (event.EventID == 4768 or event.EventID == 529) and ( event_time>= self.base_time):
+                    if (event.EventID == 4771 or event.EventID == 529) and ( event_time>= self.base_time):
                         file.write(str(event.EventID))
                         file.write(',')
                         file.write(str(event.StringInserts))
