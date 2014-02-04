@@ -1,4 +1,5 @@
 log-dump
+<<<<<<< HEAD
 --------
 
 The Windows security log dumper.
@@ -34,3 +35,6 @@ Licensed under the Apache License, Version 2.0, that can be viewed at:
 Credits
 -------
 * [Gabriel Abdalla Cavalcante](https://github.com/gcavalcante8808)
+=======
+========
+>>>>>>> 0d845fb2be3dad915f14bd1316a2b2332ef222f4
