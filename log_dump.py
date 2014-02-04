@@ -74,10 +74,10 @@ class AuditFailureDump(object):
                     event_time = self.convert_time(event.TimeGenerated.Format())
                     if (event.EventID == 4625 or event.EventID == 4771 or
                     event.EventID == 529) and (event_time >= self.base_time):
-                        file.write(str(event.EventID))
-                        file.write(',')
-                        file.write(str(event.StringInserts))
-                        file.write('\n')
+                        logon_file.write(str(event.EventID))
+                        logon_file.write(',')
+                        logon_file.write(str(event.StringInserts))
+                        logon_file.write('\n')
 
             win32evtlog.CloseEventLog(self.hand)
 
