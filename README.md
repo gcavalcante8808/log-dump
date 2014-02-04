@@ -25,7 +25,7 @@ https://pypi.python.org/pypi/log-dump/
 How to Use
 ----------
 
-Once Instaled, you just need to provide a range of date, as noted in the following example(Considering that the scripts dir of the python instalation is part of the PATH):
+Once Instaled, you just need run it with Elevated Privileges and provide a range of date, as noted in the following example(Considering that the scripts dir of the python instalation is part of the PATH):
 
 `C:\>logs.py -sd "30/01/13 20:00" -ed "31/01/13 20:00"`
 
