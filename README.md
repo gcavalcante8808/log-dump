@@ -14,7 +14,13 @@ Installation
 
 1. Install Log-dump.
 
+You can install the log-dump through pip:
+
 `pip install log-dump`
+
+As well, the sdist package can be downloaded at:
+
+https://pypi.python.org/pypi/log-dump/
 
 How to Use
 ----------
