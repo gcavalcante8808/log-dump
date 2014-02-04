@@ -27,7 +27,7 @@ How to Use
 
 Once Instaled, you just need run it with Elevated Privileges and provide a range of date, as noted in the following example(Considering that the scripts dir of the python instalation is part of the PATH):
 
-`C:\>logs.py -sd "30/01/13 20:00" -ed "31/01/13 20:00"`
+`C:\>log_dump.py -sd "30/01/13 20:00" -ed "31/01/13 20:00"`
 
 A file named 'logon_failure.log' will be created at the current dir with all logon errors in the CSV format.
 
