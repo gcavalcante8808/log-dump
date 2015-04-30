@@ -83,12 +83,14 @@ class AuditFailureDump(object):
                 events = self.read_log_entry().next()
                 if events:
                     if self.convert_time(events[0].TimeGenerated.Format()) > \
-                            self.end_time:break
+                            self.end_time:
+                        break
 
                     for event in events:
-                        event_time = self.convert_time(event.TimeGenerated.Format())
+                        etime = self.convert_time(event.TimeGenerated.Format())
+
                         if event.EventID in self.ids and \
-                                (event_time >= self.base_time):
+                                (etime >= self.base_time):
                             logon_file.write(str(event.EventID))
                             logon_file.write(',')
                             logon_file.write(str(event.StringInserts))
