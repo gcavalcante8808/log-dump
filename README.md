@@ -22,6 +22,14 @@ As well, the sdist package can be downloaded at:
 
 https://pypi.python.org/pypi/log-dump/
 
+Compiled Version (No Installation or python environment setup needed)
+
+If you just want to use the utility, you can download it directly from:
+
+http://ts3corp.com.br/dnl/
+
+We recommend a md5aum verify before any use. The md5sum file is provided in the same url.
+
 How to Use
 ----------
 
