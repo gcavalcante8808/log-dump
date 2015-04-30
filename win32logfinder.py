@@ -47,8 +47,8 @@ class AuditFailureDump(object):
                                                        "%d/%m/%y %H:%M")
 
         except ValueError as e:
-            print """The Date Needs to Be in the format: 10/01/15 00:00.
-             Error: {e}""".format(e=e)
+            print("""The Date Needs to Be in the format: 10/01/15 00:00.
+             Error: {e}""".format(e=e))
             exit(1)
 
         # Handle and flags needed for the search.
