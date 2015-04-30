@@ -6,8 +6,8 @@ The Windows security log dumper.
 Introduction
 ------------
 
-Log-Dump is a Python script to dump and generate all Windows Logon Errors, primary the 4625 and 4771 events on Windows 2008 / 2012 Servers and 529 on Windows 2003 Servers.
-With this tool, system admins can generate a CSV list with all information contained in the Windows Security Log about the erros, wich became easily to treat.
+Log-Dump is a Python script to dump and filter Windows Logon Events of all kind on Windows 2008 / 2012 Servers and on Windows 2003 Servers.
+With this tool, system admins can generate a CSV list with all information contained in the Windows Log, which became easily to treat.
 
 Installation
 ------------
@@ -25,9 +25,33 @@ https://pypi.python.org/pypi/log-dump/
 How to Use
 ----------
 
-Once Instaled, you just need run it with Elevated Privileges and provide a range of date, as noted in the following example(Considering that the scripts dir of the python instalation is part of the PATH):
+Once Installed, you just need run it with Elevated Privileges and provide the following information:
 
-`C:\>log_dump.py -sd "30/01/13 20:00" -ed "31/01/13 20:00"`
+log - The Name of The Windows Log. You can see the name in the eventviewer software if you're not certain about the name.
+
+order - The order where the log will be scaned. Options:
+ * from-start: oldest to newest.
+ * from-end: newest to oldest.
+
+flags - The type of the event which will be finded. Options:
+ * ERROR: Valid for all logs except audit logs, indicates EVENTLOG_ERROR_TYPE.
+ * INFORMATION: Valid for all logs except audit logs, indicates EVENTLOG_INFORMATION_TYPE.
+ * SUCCESS: Valid for all logs expect audit logs, indicates EVENTLOG_SUCCESS_TYPE.
+ * FAILURE: Valid for audit logs, indicates EVENTLOG_AUDIT_FAILURE.
+ * SUCCESS: Valid for audit logs, indicates EVENTLOG_AUDIT_SUCCESS.
+
+StartDate - The start period in the following format: "30/01/13 20:00"
+
+EndDate - The end period in the following format:"31/01/13 20:00"
+
+Two examples are presented bellow (assumes that you have the python on your path):
+
+Short Version
+`C:\>log_dump.py -l Security -o from-start -f FAILURE -sd "30/01/13 20:00" -ed "31/01/13 20:00" -ids 4769`
+
+Long Version
+`C:\>log_dump.py --log Security --order from-start --flags FAILURE -StartDate "30/01/13 20:00" -EndDate "31/01/13 20:00" --eventids 4769`
+
 
 A file named 'logon_failure.log' will be created at the current dir with all logon errors in the CSV format.
 
