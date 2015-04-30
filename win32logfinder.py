@@ -38,6 +38,7 @@ class AuditFailureDump(object):
         self.start_date = kwargs.pop('start_date')
         self.end_date = kwargs.pop('end_date')
         self.value = kwargs.pop('value')
+        self.ids = kwargs.pop('eventids')
 
         try:
             self.base_time = datetime.datetime.strptime(self.start_date,
@@ -86,9 +87,8 @@ class AuditFailureDump(object):
 
                     for event in events:
                         event_time = self.convert_time(event.TimeGenerated.Format())
-                        if (event.EventID == 4625 or event.EventID == 4771 or
-                                    event.EventID == 529) and (
-                                    event_time >= self.base_time):
+                        if event.EventID in self.ids and \
+                                (event_time >= self.base_time):
                             logon_file.write(str(event.EventID))
                             logon_file.write(',')
                             logon_file.write(str(event.StringInserts))
@@ -110,6 +110,8 @@ if __name__ == '__main__':
     parser.add_argument('-sd', '--StartDate', required=True)
     parser.add_argument('-ed', '--EndDate', required=True)
     parser.add_argument('-v', '--value', required=False, default=False)
+    parser.add_argument('-ids', '--eventids', nargs='+', type=int,
+                        required=True)
     args = parser.parse_args()
 
     flag = None
@@ -132,5 +134,5 @@ if __name__ == '__main__':
 
     d = AuditFailureDump(log=args.log, order=order, flags=flag,
                          start_date=args.StartDate, end_date=args.EndDate,
-                         value=args.value)
+                         value=args.value, eventids=args.eventids)
     d.filter_and_write_log()
