@@ -22,8 +22,9 @@ As well, the sdist package can be downloaded at:
 
 https://pypi.python.org/pypi/log-dump/
 
-Compiled Version (No Installation or python environment setup needed)
----------------------------------------------------------------------
+Compiled Version
+----------------
+
 If you just want to use the utility, you can download it directly from:
 
 http://ts3corp.com.br/dnl/
