@@ -6,7 +6,7 @@ except ImportError:
 
 setup(name='log-dump',
       version='0.1',
-      scripts=['log_dump.py', ],
+      scripts=['win32logfinder.py', ],
       author='Gabriel Abdalla Cavalcante',
       author_email='gabriel.cavalcante88@gmail.com',
       description = ("""Log-Dump is a Python script to dump
