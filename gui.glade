@@ -83,7 +83,7 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <property name="always_show_image">True</property>
-                        <signal name="activate" handler="onDeleteWindow" swapped="no"/>
+                        <signal name="activate" handler="on_delete_window" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -329,7 +329,7 @@
               <item id="720" translatable="yes">Last 30 Days</item>
               <item id="999" translatable="yes">Personalized</item>
             </items>
-            <signal name="changed" handler="onRegisteredChanged" swapped="no"/>
+            <signal name="changed" handler="on_registered_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -392,6 +392,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
+                <signal name="activate" handler="on_clear_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -406,6 +407,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
+                <signal name="activate" handler="onDeleteWindow" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -420,6 +422,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
+                <signal name="activate" handler="on_search_activated" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>

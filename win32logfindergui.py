@@ -10,12 +10,17 @@ from gi.repository import Gtk
 
 
 class Handler(object):
-    def onRegisteredChanged(self, *args):
-        print("Registered Changed.")
+    def on_registered_changed(self, *args):
+        raise NotImplementedError
 
-    def onDeleteWindow(self, *args):
+    def on_delete_window(self, *args):
         Gtk.main_quit()
 
+    def on_search_activated(self, *args):
+        raise NotImplementedError
+
+    def on_clear_activated(self, *args):
+        raise NotImplementedError
 settings = Gtk.Settings.get_default()
 settings.props.gtk_button_images = True
 
