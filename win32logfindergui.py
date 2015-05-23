@@ -13,6 +13,9 @@ class Handler(object):
     def onRegisteredChanged(self, *args):
         print("Registered Changed.")
 
+    def onDeleteWindow(self, *args):
+        Gtk.main_quit()
+
 settings = Gtk.Settings.get_default()
 settings.props.gtk_button_images = True
 
