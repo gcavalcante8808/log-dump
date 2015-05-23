@@ -8,6 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 from gi.repository import Gtk
 import abc
+import datetime
 
 
 class BaseGui(object):
@@ -17,6 +18,40 @@ class BaseGui(object):
     def __init__(self):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("gui.glade")
+        self.registered_choices = {}
+
+    def _validate_field(self, field_type, value, status_icon):
+        """
+        Validate a field accordingly to the field type, as follows:
+
+        Text: if the field is not null, it is validated.
+        Date: If the string can be converted to datetime, it is validated.
+        Time: If the string can be converted to hour/minute, it is validted.
+
+        In all cases, if the field is valid, the correspondent icon of status is updated.
+        """
+        validated_data = None
+
+        if field_type == "text":
+            pass
+        #TODO: STOCK_DIALOG_WARNING_WONT_WORK
+        elif field_type == "date":
+            try:
+                validated_data = datetime.datetime.strptime(value, "%d/%m/%Y")
+            except (ValueError,):
+                if status_icon.get_stock()[0] != "gtk-dialog-warning":
+                    status_icon.set_from_icon_name(Gtk.STOCK_DIALOG_WARNING, 4)
+
+        elif field_type == "time":
+            try:
+                validated_data = datetime.datetime.strptime(value, "%H:%M")
+            except(ValueError,):
+                if status_icon.get_stock()[0] != "gtk-dialog-warning":
+                    status_icon.set_from_icon_name(Gtk.STOCK_CLOSE, 4)
+
+        if validated_data:
+            status_icon.set_from_icon_name(Gtk.STOCK_APPLY, 4)
+            return validated_data
 
 
 class MainWindow(BaseGui):
@@ -29,7 +64,6 @@ class MainWindow(BaseGui):
         Just Get the Main Window object from the glade file.
         """
         super(MainWindow, self).__init__()
-        self.registered_choices = None
         self.mainwindow = self.builder.get_object("MainWindow")
 
     @abc.abstractmethod
@@ -40,19 +74,19 @@ class MainWindow(BaseGui):
         """
         pass
 
-    def on_delete_window(self, *args):
+    def on_delete_window(self, widget):
         Gtk.main_quit()
 
-    def on_search_clicked(self, *args):
+    def on_search_clicked(self, widget):
         raise NotImplementedError
 
-    def on_clear_clicked(self, *args):
+    def on_clear_clicked(self, widget):
         raise NotImplementedError
 
-    def on_about_activated(self, *args):
+    def on_about_activated(self, widget):
         raise NotImplementedError
 
-    def on_search_order_cb_changed(self, *args):
+    def on_search_order_cb_changed(self, widget):
         raise NotImplementedError
 
 
@@ -61,22 +95,59 @@ class RegisteredWindow(BaseGui):
         super(RegisteredWindow, self).__init__()
         self.regwindow = self.builder.get_object("RegisteredWindow")
 
-    def on_from_field_choice_changed(self):
-        raise NotImplementedError
+        self.from_field_date = self.builder.get_object("from_field_date")
+        self.from_field_time = self.builder.get_object("from_field_time")
+        self.from_date_status = self.builder.get_object("from_date_status")
+        self.from_time_status = self.builder.get_object("from_time_status")
 
-    def on_from_field_date_insert_at_cursor(self):
-        raise NotImplementedError
+        self.to_field_date = self.builder.get_object("to_field_date")
+        self.to_field_time = self.builder.get_object("to_field_time")
+        self.to_date_status =self.builder.get_object("to_date_status")
+        self.to_time_status = self.builder.get_object("to_time_status")
 
-    def on_from_field_hour_insert_at_cursor(self):
-        raise NotImplementedError
+    def on_from_field_choice_changed(self, widget):
+        value = widget.get_active_id()
+        if "first-event" in value:
+            self.from_field_date.set_property("editable", False)
+            self.from_field_time.set_property("editable", False)
+        elif "events-in" in value:
+            self.from_field_date.set_property("editable", True)
+            self.from_field_time.set_property("editable", True)
 
-    def on_to_field_choice_changed(self):
-        raise NotImplementedError
+    def on_from_field_date_changed(self, widget):
+        value = widget.get_text()
+        validated_data = self._validate_field(field_type="date", value=value, status_icon=self.from_date_status)
+        if validated_data:
+            self.registered_choices.update({"from_date":validated_data})
 
-    def on_to_field_date_insert_at_cursor(self):
-        raise NotImplementedError
+    def on_from_field_time_changed(self, widget):
+        value = widget.get_text()
+        validated_data = self._validate_field(field_type="time", value=value, status_icon=self.from_time_status)
+        if validated_data:
+            self.registered_choices.update({"from_hour":validated_data})
 
-    def on_to_field_hour_insert_at_cursor(self):
+    def on_to_field_choice_changed(self, widget):
+        value = widget.get_active_id()
+        if "last-event" in value:
+            self.to_field_date.set_property("editable", False)
+            self.to_field_time.set_property("editable", False)
+        elif "events-in" in value:
+            self.to_field_date.set_property("editable", True)
+            self.to_field_time.set_property("editable", True)
+
+    def on_to_field_date_changed(self, widget):
+        value = widget.get_text()
+        validated_data = self._validate_field(field_type="date", value=value, status_icon=self.to_date_status)
+        if validated_data:
+            self.registered_choices.update({"to_date":validated_data})
+
+    def on_to_field_time_changed(self, widget):
+        value = widget.get_text()
+        validated_data = self._validate_field(field_type="time", value=value, status_icon=self.to_time_status)
+        if validated_data:
+            self.registered_choices.update({"to_hour":validated_data})
+
+    def on_rwindow_ok_button_clicked(self, widget):
         raise NotImplementedError
 
 
