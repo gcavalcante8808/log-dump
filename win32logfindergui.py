@@ -6,10 +6,10 @@
 #
 # Licensed under the Apache License, Version 2.0, that can be viewed at:
 # http://www.apache.org/licenses/LICENSE-2.0
-from gi.repository import Gtk
 import abc
 import datetime
 import weakref
+from gi.repository import Gtk
 
 
 class BaseGui(object):
