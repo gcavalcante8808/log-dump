@@ -108,7 +108,8 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
         if active_id == "anytime":
             raise NotImplementedError
         elif active_id == "personalized":
-            raise NotImplementedError
+            self.regwindow.set_transient_for(self.mainwindow)
+            self.regwindow.show_all()
         else:
             self.registered_choices = active_id
 
