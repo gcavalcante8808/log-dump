@@ -9,6 +9,18 @@
 from gi.repository import Gtk
 
 
+class Win32LogFinderGui(object):
+    def __init__(self):
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file("gui.glade")
+        self.builder.connect_signals(Handler())
+
+        settings = Gtk.Settings.get_default()
+        settings.props.gtk_button_images = True
+
+        window = self.builder.get_object("MainWindow")
+        window.show_all()
+
 class Handler(object):
     def on_registered_changed(self, *args):
         raise NotImplementedError
@@ -28,13 +40,7 @@ class Handler(object):
     def on_search_order_cb_changed(self, *args):
         raise NotImplementedError
 
-settings = Gtk.Settings.get_default()
-settings.props.gtk_button_images = True
 
-builder = Gtk.Builder()
-builder.add_from_file("gui.glade")
-builder.connect_signals(Handler())
-
-window = builder.get_object("MainWindow")
-window.show_all()
-Gtk.main()
+if __name__ == "__main__":
+    window = Win32LogFinderGui()
+    Gtk.main()
