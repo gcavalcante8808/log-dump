@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# __author__ = '01388863189'
+# __author__ = 'Gabriel Abdalla Cavalcante Silva'
 #
 # Done by Gabriel Abdalla Cavalcante Silva
 #
