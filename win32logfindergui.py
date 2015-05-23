@@ -23,14 +23,20 @@ class BaseGui(object):
 
     def _register_model_value(self, model, value):
         """
-        Receive a value and inserts into the especified dictionary.
-        :param field:
-        :param value:
-        :return:
+        Receive a value and inserts into the especified dictionary/model.
+        :param model: The name of the data model, eg registered choices.
+        :param value: Dictionary to be inserted into the model.
+        :return: None
         """
         model.update(value)
 
     def _toggle_fields(self, fields, operation):
+        """
+        Activates and deactivates some Gtk Fields.
+        :param fields: List of Gtk fields.
+        :param operation: Enable or Disable.
+        :return: None
+        """
         if operation == "disable":
             for field in fields:
                 field.set_property("editable", False)
@@ -39,6 +45,11 @@ class BaseGui(object):
                 field.set_property("editable", True)
 
     def _object_picker(self, widget_name):
+        """
+        Get the instance based on a widget_name passed.
+        :param widget_name: The name of the widget got from widget.get_name().
+        :return: A list with all instances that matches the string search.
+        """
         obj = [obj for obj in Register.instances if obj.name in widget_name]
         if obj:
             return obj
@@ -116,7 +127,13 @@ class MainWindow(BaseGui):
 
 
 class Register(object):
-    def __init__(self, name=None):
+    """
+    An class that functions as a Interface, containing basic data about the RegisterWindow Fields.
+    """
+    def __init__(self, name):
+        """
+        All instances should be tracked using the name.
+        """
         self.__class__.instances.append(weakref.proxy(self))
         self.name = name
 
@@ -125,21 +142,34 @@ class Register(object):
     field_date = None
     field_time = None
     field_date_status = None
-    field_time_status =None
+    field_time_status = None
 
     instances = []
 
     @property
     def fields(self):
+        """
+        Return the two fields as one.
+        """
         return self.field_date, self.field_time
 
     @property
     def fields_statuses(self):
+        """
+        Return the two field status attrs as one
+        """
         return self.field_date_status, self.field_time_status
 
 
 class RegisteredWindow(BaseGui):
+    """
+    Contain all information about the DateRange Dialog - Registered Window.
+    """
     def __init__(self):
+        """
+        Get the RegisteredWindow from the glade file, instantiate and map Register Class instances  and their fields
+        to the glade Gtk widgets.
+        """
         super(RegisteredWindow, self).__init__()
         self.regwindow = self.builder.get_object("RegisteredWindow")
 
@@ -160,6 +190,11 @@ class RegisteredWindow(BaseGui):
         self.to_field.field_time_status = self.builder.get_object("to_time_status")
 
     def on_register_choice_changed(self, widget):
+        """
+        Receive the widget values and write/disable/enables some fields on GtkUI.
+
+        If the user chooses first event or last event, automatic values are writen on instance.model.
+        """
         widget_value = widget.get_active_id()
         instance = self._object_picker(widget.get_name())[0]
 
@@ -174,6 +209,9 @@ class RegisteredWindow(BaseGui):
             self._toggle_fields(instance.fields, operation="enable")
 
     def on_field_date_changed(self, widget):
+        """
+        Receive Widgets values that comes from date fields on GtkUI and register the value if it is valid.
+        """
         value = widget.get_text()
         instance = self._object_picker(widget.get_name())[0]
         validated_data = self._validate_field(field=instance.field_date.get_name(), field_type="date", value=value,
@@ -183,6 +221,9 @@ class RegisteredWindow(BaseGui):
             self._register_model_value(instance.model, validated_data)
 
     def on_field_time_changed(self, widget):
+        """
+        Receive Widgets values that comes from time fields on GtkUI and register the value if it is valid.
+        """
         value = widget.get_text()
         instance = self._object_picker(widget.get_name())[0]
         validated_data = self._validate_field(field=instance.field_time.get_name(), field_type="time", value=value,
@@ -192,6 +233,9 @@ class RegisteredWindow(BaseGui):
             self._register_model_value(instance.model, validated_data)
 
     def on_rwindow_ok_button_clicked(self, widget):
+        """
+        Stub for now.
+        """
         print(self.registered_choices)
 
 
