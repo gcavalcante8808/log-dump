@@ -8,8 +8,6 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 from gi.repository import Gtk
 
-BOTTOM = Gtk.PositionType.BOTTOM
-RIGHT = Gtk.PositionType.RIGHT
 
 class Handler(object):
     def onRegisteredChanged(self, *args):
