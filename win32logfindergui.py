@@ -21,6 +21,10 @@ class Handler(object):
 
     def on_clear_clicked(self, *args):
         raise NotImplementedError
+
+    def on_about_activated(self, *args):
+        raise NotImplementedError
+
 settings = Gtk.Settings.get_default()
 settings.props.gtk_button_images = True
 
