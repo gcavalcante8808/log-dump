@@ -1,2 +1,3 @@
 "pywin32" 
 "py2exe" 
+"pyGobject"
