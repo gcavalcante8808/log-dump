@@ -25,6 +25,9 @@ class Handler(object):
     def on_about_activated(self, *args):
         raise NotImplementedError
 
+    def on_search_order_cb_changed(self, *args):
+        raise NotImplementedError
+
 settings = Gtk.Settings.get_default()
 settings.props.gtk_button_images = True
 
@@ -32,6 +35,6 @@ builder = Gtk.Builder()
 builder.add_from_file("gui.glade")
 builder.connect_signals(Handler())
 
-window = builder.get_object("window1")
+window = builder.get_object("MainWindow")
 window.show_all()
 Gtk.main()

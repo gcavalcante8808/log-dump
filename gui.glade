@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <object class="GtkWindow" id="window1">
+  <object class="GtkWindow" id="MainWindow">
     <property name="can_focus">False</property>
     <property name="margin_left">10</property>
     <property name="margin_right">10</property>
@@ -23,8 +23,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">2</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -37,8 +35,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">1</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -50,8 +46,6 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">1</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -163,8 +157,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">0</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -175,8 +167,6 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">0</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -298,8 +288,6 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">3</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -312,8 +300,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">3</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -335,8 +321,6 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">2</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -349,8 +333,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">4</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -363,8 +345,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">5</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
           </packing>
         </child>
         <child>
@@ -376,8 +356,27 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">5</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="eventlog_level_content">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="has_entry">True</property>
+            <items>
+              <item translatable="yes">Security</item>
+              <item translatable="yes">System</item>
+              <item translatable="yes">Application</item>
+            </items>
+            <child internal-child="entry">
+              <object class="GtkEntry" id="comboboxtext-entry">
+                <property name="can_focus">False</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">4</property>
           </packing>
         </child>
         <child>
@@ -434,32 +433,34 @@
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">6</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
+            <property name="top_attach">7</property>
           </packing>
         </child>
         <child>
-          <object class="GtkComboBoxText" id="eventlog_level_content">
+          <object class="GtkLabel" id="label1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="has_entry">True</property>
+            <property name="margin_top">10</property>
+            <property name="label" translatable="yes">Search Order</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">6</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="search_order_cb">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <items>
-              <item translatable="yes">Security</item>
-              <item translatable="yes">System</item>
-              <item translatable="yes">Application</item>
+              <item id="from-end" translatable="yes">Reverse (Newest to Oldest)</item>
+              <item translatable="yes">Forward (Oldest to Newest)</item>
             </items>
-            <child internal-child="entry">
-              <object class="GtkEntry" id="comboboxtext-entry">
-                <property name="can_focus">False</property>
-              </object>
-            </child>
+            <signal name="changed" handler="on_search_order_cb_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="top_attach">4</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
+            <property name="top_attach">6</property>
           </packing>
         </child>
         <child>
