@@ -309,13 +309,13 @@
             <property name="margin_top">10</property>
             <property name="active">1</property>
             <items>
-              <item id="0" translatable="yes">Any Time</item>
+              <item id="anytime" translatable="yes">Any Time</item>
               <item id="1" translatable="yes">Last Hour</item>
               <item id="12" translatable="yes">Last 12 Hours</item>
               <item id="24" translatable="yes">Last 24 Hours</item>
               <item id="168" translatable="yes">Last 7 Days</item>
               <item id="720" translatable="yes">Last 30 Days</item>
-              <item id="999" translatable="yes">Personalized</item>
+              <item id="personalized" translatable="yes">Personalized</item>
             </items>
             <signal name="changed" handler="on_registered_changed" swapped="no"/>
           </object>
