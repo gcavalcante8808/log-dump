@@ -609,14 +609,15 @@
             </child>
             <child>
               <object class="GtkComboBoxText" id="from_field_choice">
+                <property name="name">from_field_choice</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_top">11</property>
                 <items>
-                  <item id="first-event" translatable="yes">First Event</item>
-                  <item id="events-in" translatable="yes">Events in</item>
+                  <item id="event" translatable="yes">First Event</item>
+                  <item id="date" translatable="yes">Events in</item>
                 </items>
-                <signal name="changed" handler="on_from_field_choice_changed" swapped="no"/>
+                <signal name="changed" handler="on_register_choice_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -625,14 +626,15 @@
             </child>
             <child>
               <object class="GtkComboBoxText" id="to_field_choice">
+                <property name="name">to_field_choice</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_top">10</property>
                 <items>
-                  <item id="last-event" translatable="yes">Last Event</item>
-                  <item id="events-in" translatable="yes">Events In</item>
+                  <item id="event" translatable="yes">Last Event</item>
+                  <item id="date" translatable="yes">Events In</item>
                 </items>
-                <signal name="changed" handler="on_to_field_choice_changed" swapped="no"/>
+                <signal name="changed" handler="on_register_choice_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -641,11 +643,13 @@
             </child>
             <child>
               <object class="GtkEntry" id="from_field_date">
+                <property name="name">from_field_date</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_top">10</property>
+                <property name="shadow_type">etched-in</property>
                 <property name="placeholder_text" translatable="yes">10/05/2015</property>
-                <signal name="changed" handler="on_from_field_date_changed" swapped="no"/>
+                <signal name="changed" handler="on_field_date_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -654,11 +658,12 @@
             </child>
             <child>
               <object class="GtkEntry" id="to_field_date">
+                <property name="name">to_field_date</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_top">10</property>
                 <property name="placeholder_text" translatable="yes">20/05/2015</property>
-                <signal name="changed" handler="on_to_field_date_changed" swapped="no"/>
+                <signal name="changed" handler="on_field_date_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -689,12 +694,13 @@
             </child>
             <child>
               <object class="GtkEntry" id="to_field_time">
+                <property name="name">to_field_time</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_left">10</property>
                 <property name="margin_top">10</property>
                 <property name="placeholder_text" translatable="yes">18:00</property>
-                <signal name="changed" handler="on_to_field_time_changed" swapped="no"/>
+                <signal name="changed" handler="on_field_time_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">4</property>
@@ -752,12 +758,13 @@
             </child>
             <child>
               <object class="GtkEntry" id="from_field_time">
+                <property name="name">from_field_time</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_left">10</property>
                 <property name="margin_top">10</property>
                 <property name="placeholder_text" translatable="yes">07:00</property>
-                <signal name="changed" handler="on_from_field_time_changed" swapped="no"/>
+                <signal name="changed" handler="on_field_time_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">4</property>

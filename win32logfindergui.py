@@ -9,6 +9,7 @@
 from gi.repository import Gtk
 import abc
 import datetime
+import weakref
 
 
 class BaseGui(object):
@@ -20,13 +21,37 @@ class BaseGui(object):
         self.builder.add_from_file("gui.glade")
         self.registered_choices = {}
 
-    def _validate_field(self, field_type, value, status_icon):
+    def _register_model_value(self, model, value):
+        """
+        Receive a value and inserts into the especified dictionary.
+        :param field:
+        :param value:
+        :return:
+        """
+        model.update(value)
+
+    def _toggle_fields(self, fields, operation):
+        if operation == "disable":
+            for field in fields:
+                field.set_property("editable", False)
+        elif operation == "enable":
+            for field in fields:
+                field.set_property("editable", True)
+
+    def _object_picker(self, widget_name):
+        obj = [obj for obj in Register.instances if obj.name in widget_name]
+        if obj:
+            return obj
+        else:
+            raise IndexError
+
+    def _validate_field(self, field, field_type, value, status_icon):
         """
         Validate a field accordingly to the field type, as follows:
 
         Text: if the field is not null, it is validated.
         Date: If the string can be converted to datetime, it is validated.
-        Time: If the string can be converted to hour/minute, it is validted.
+        Time: If the string can be converted to hour/minute, it is validated.
 
         In all cases, if the field is valid, the correspondent icon of status is updated.
         """
@@ -51,7 +76,7 @@ class BaseGui(object):
 
         if validated_data:
             status_icon.set_from_icon_name(Gtk.STOCK_APPLY, 4)
-            return validated_data
+            return {field: validated_data}
 
 
 class MainWindow(BaseGui):
@@ -90,65 +115,84 @@ class MainWindow(BaseGui):
         raise NotImplementedError
 
 
+class Register(object):
+    def __init__(self, name=None):
+        self.__class__.instances.append(weakref.proxy(self))
+        self.name = name
+
+    model = None
+    choices = None
+    field_date = None
+    field_time = None
+    field_date_status = None
+    field_time_status =None
+
+    instances = []
+
+    @property
+    def fields(self):
+        return self.field_date, self.field_time
+
+    @property
+    def fields_statuses(self):
+        return self.field_date_status, self.field_time_status
+
+
 class RegisteredWindow(BaseGui):
     def __init__(self):
         super(RegisteredWindow, self).__init__()
         self.regwindow = self.builder.get_object("RegisteredWindow")
 
-        self.from_field_date = self.builder.get_object("from_field_date")
-        self.from_field_time = self.builder.get_object("from_field_time")
-        self.from_date_status = self.builder.get_object("from_date_status")
-        self.from_time_status = self.builder.get_object("from_time_status")
+        self.from_field = Register(name="from_field")
+        self.from_field.model = self.registered_choices
+        self.from_field.choices = self.builder.get_object("from_field_choices")
+        self.from_field.field_date = self.builder.get_object("from_field_date")
+        self.from_field.field_time = self.builder.get_object("from_field_time")
+        self.from_field.field_date_status = self.builder.get_object("from_date_status")
+        self.from_field.field_time_status = self.builder.get_object("from_time_status")
 
-        self.to_field_date = self.builder.get_object("to_field_date")
-        self.to_field_time = self.builder.get_object("to_field_time")
-        self.to_date_status =self.builder.get_object("to_date_status")
-        self.to_time_status = self.builder.get_object("to_time_status")
+        self.to_field = Register(name="to_field")
+        self.to_field.model = self.registered_choices
+        self.to_field.choices = self.builder.get_object("to_field_choices")
+        self.to_field.field_date = self.builder.get_object("to_field_date")
+        self.to_field.field_time = self.builder.get_object("to_field_time")
+        self.to_field.field_date_status = self.builder.get_object("to_date_status")
+        self.to_field.field_time_status = self.builder.get_object("to_time_status")
 
-    def on_from_field_choice_changed(self, widget):
-        value = widget.get_active_id()
-        if "first-event" in value:
-            self.from_field_date.set_property("editable", False)
-            self.from_field_time.set_property("editable", False)
-        elif "events-in" in value:
-            self.from_field_date.set_property("editable", True)
-            self.from_field_time.set_property("editable", True)
+    def on_register_choice_changed(self, widget):
+        widget_value = widget.get_active_id()
+        instance = self._object_picker(widget.get_name())[0]
 
-    def on_from_field_date_changed(self, widget):
+        values = {instance.field_date.get_name(): "event", instance.field_time.get_name(): "date"}
+
+        if "event" in widget_value:
+            if values:
+                self._register_model_value(instance.model, values)
+                self._toggle_fields(instance.fields, operation="disable")
+
+        elif "date" in widget_value:
+            self._toggle_fields(instance.fields, operation="enable")
+
+    def on_field_date_changed(self, widget):
         value = widget.get_text()
-        validated_data = self._validate_field(field_type="date", value=value, status_icon=self.from_date_status)
-        if validated_data:
-            self.registered_choices.update({"from_date":validated_data})
+        instance = self._object_picker(widget.get_name())[0]
+        validated_data = self._validate_field(field=instance.field_date.get_name(), field_type="date", value=value,
+                                              status_icon=instance.field_date_status)
 
-    def on_from_field_time_changed(self, widget):
+        if validated_data:
+            self._register_model_value(instance.model, validated_data)
+
+    def on_field_time_changed(self, widget):
         value = widget.get_text()
-        validated_data = self._validate_field(field_type="time", value=value, status_icon=self.from_time_status)
-        if validated_data:
-            self.registered_choices.update({"from_hour":validated_data})
+        instance = self._object_picker(widget.get_name())[0]
+        validated_data = self._validate_field(field=instance.field_time.get_name(), field_type="time", value=value,
+                                              status_icon=instance.field_time_status)
 
-    def on_to_field_choice_changed(self, widget):
-        value = widget.get_active_id()
-        if "last-event" in value:
-            self.to_field_date.set_property("editable", False)
-            self.to_field_time.set_property("editable", False)
-        elif "events-in" in value:
-            self.to_field_date.set_property("editable", True)
-            self.to_field_time.set_property("editable", True)
-
-    def on_to_field_date_changed(self, widget):
-        value = widget.get_text()
-        validated_data = self._validate_field(field_type="date", value=value, status_icon=self.to_date_status)
         if validated_data:
-            self.registered_choices.update({"to_date":validated_data})
-
-    def on_to_field_time_changed(self, widget):
-        value = widget.get_text()
-        validated_data = self._validate_field(field_type="time", value=value, status_icon=self.to_time_status)
-        if validated_data:
-            self.registered_choices.update({"to_hour":validated_data})
+            self._register_model_value(instance.model, validated_data)
 
     def on_rwindow_ok_button_clicked(self, widget):
-        raise NotImplementedError
+        print(self.registered_choices)
 
 
 class Win32LogFinderGui(MainWindow, RegisteredWindow):
