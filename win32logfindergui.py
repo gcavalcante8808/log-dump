@@ -16,10 +16,10 @@ class Handler(object):
     def on_delete_window(self, *args):
         Gtk.main_quit()
 
-    def on_search_activated(self, *args):
+    def on_search_clicked(self, *args):
         raise NotImplementedError
 
-    def on_clear_activated(self, *args):
+    def on_clear_clicked(self, *args):
         raise NotImplementedError
 settings = Gtk.Settings.get_default()
 settings.props.gtk_button_images = True

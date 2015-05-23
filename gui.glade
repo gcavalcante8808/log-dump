@@ -392,7 +392,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="activate" handler="on_clear_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_clear_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -407,7 +407,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="activate" handler="onDeleteWindow" swapped="no"/>
+                <signal name="clicked" handler="on_delete_window" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -422,7 +422,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="activate" handler="on_search_activated" swapped="no"/>
+                <signal name="clicked" handler="on_search_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
