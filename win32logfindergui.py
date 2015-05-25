@@ -9,6 +9,7 @@
 import abc
 import datetime
 import weakref
+import re
 from gi.repository import Gtk
 
 
@@ -17,6 +18,7 @@ class BaseGui(object):
     A simple Base Class that will contain information needed by all other
     classes.
     """
+
     def __init__(self):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("gui.glade")
@@ -57,13 +59,15 @@ class BaseGui(object):
         else:
             raise IndexError
 
-    def _validate_field(self, field, field_type, value, status_icon):
+    def _validate_field(self, field, field_type, value, status_icon,
+                        regexp=None):
         """
         Validate a field accordingly to the field type, as follows:
 
         Text: if the field is not null, it is validated.
         Date: If the string can be converted to datetime, it is validated.
         Time: If the string can be converted to hour/minute, it is validated.
+        Regexp: If the string matches for the needed regexp, it validated.
 
         In all cases, if the field is valid, the correspondent icon of status
         is updated.
@@ -72,24 +76,28 @@ class BaseGui(object):
 
         if field_type == "text":
             pass
-        #TODO: STOCK_DIALOG_WARNING_WONT_WORK
+        elif field_type == "regexp":
+            if regexp.match(value):
+                validated_data = True
+        # TODO: STOCK_DIALOG_WARNING_WONT_WORK
         elif field_type == "date":
             try:
                 validated_data = datetime.datetime.strptime(value, "%d/%m/%Y")
             except (ValueError,):
-                if status_icon.get_stock()[0] != "gtk-dialog-warning":
-                    status_icon.set_from_icon_name(Gtk.STOCK_DIALOG_WARNING, 4)
+                pass
 
         elif field_type == "time":
             try:
                 validated_data = datetime.datetime.strptime(value, "%H:%M")
             except(ValueError,):
-                if status_icon.get_stock()[0] != "gtk-dialog-warning":
-                    status_icon.set_from_icon_name(Gtk.STOCK_CLOSE, 4)
+                pass
 
         if validated_data:
             status_icon.set_from_icon_name(Gtk.STOCK_APPLY, 4)
             return {field: validated_data}
+        else:
+            if status_icon.get_stock()[0] != "gtk-dialog-warning":
+                status_icon.set_from_icon_name(Gtk.STOCK_CLOSE, 4)
 
 
 class MainWindow(BaseGui):
@@ -97,12 +105,16 @@ class MainWindow(BaseGui):
     The class that holds the main methods for the Main Window of the project,
     which is used by the Win32LogFinderGui class.
     """
+
     def __init__(self):
         """
         Just Get the Main Window object from the glade file.
         """
         super(MainWindow, self).__init__()
         self.mainwindow = self.builder.get_object("MainWindow")
+
+        self.server_content = self.builder.get_object("server_content")
+        self.server_status = self.builder.get_object("server_status")
 
     @abc.abstractmethod
     def on_registered_changed(self, widget):
@@ -114,6 +126,17 @@ class MainWindow(BaseGui):
 
     def on_delete_window(self, widget):
         Gtk.main_quit()
+
+    def on_server_content_changed(self, widget):
+        ipv4_regexp = r"(?:[0-9]{1,3}\.){3}[0-9]{1,3}"
+        domain_regexp = r"[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}"
+        regexp = ipv4_regexp + "|" + domain_regexp
+        regexp = re.compile(regexp)
+        values = widget.get_text().rsplit(",")
+        for value in values:
+            self._validate_field(value=value, field_type="regexp",
+                                 regexp=regexp, status_icon=self.server_status,
+                                 field=self.server_content)
 
     def on_search_clicked(self, widget):
         raise NotImplementedError
@@ -133,6 +156,7 @@ class Register(object):
     An class that functions as a Interface, containing basic data about the
     RegisterWindow Fields.
     """
+
     def __init__(self, name):
         """
         All instances should be tracked using the name.
@@ -168,6 +192,7 @@ class RegisteredWindow(BaseGui):
     """
     Contain all information about the DateRange Dialog - Registered Window.
     """
+
     def __init__(self):
         """
         Get the RegisteredWindow from the glade file, instantiate and map
@@ -257,10 +282,11 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
     The GUI Itself. This class make some use of all resources presented on all
     other Classes and provide a high level boxing of all GTK resources.
     """
+
     def __init__(self):
         super(Win32LogFinderGui, self).__init__()
 
-        #Show all Icons in the software.
+        # Show all Icons in the software.
         settings = Gtk.Settings.get_default()
         settings.props.gtk_button_images = True
 
@@ -273,7 +299,7 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
         This method implements the abstract method presented on the MainWindow
         Class and uses information from MainWindow and RegisteredWindow. In
         fact, if the user chooses the personalized choice, a window appears
-        with some options to define de date range of the search.
+        with some options to define the date range of the search.
         :param widget: The ComboBoxTest Registered Choices.
         :return: None
         """
@@ -285,6 +311,7 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
             self.regwindow.show_all()
         else:
             self.registered_choices = active_id
+
 
 if __name__ == "__main__":
     window = Win32LogFinderGui()
