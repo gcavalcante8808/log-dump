@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# __author__ = '01388863189'
+# __author__ = 'Gabriel Abdalla Cavalcante Silva'
 #
 # Done by Gabriel Abdalla Cavalcante Silva
 #
 # Licensed under the Apache License, Version 2.0, that can be viewed at:
 # http://www.apache.org/licenses/LICENSE-2.0
-#
 """
 This module finds and dump AUDIT FAILURES on the SECURITY WINDOWS LOG into a
 logon_failure.log file.
