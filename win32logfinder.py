@@ -17,8 +17,6 @@ except ImportError:
     win32evtlog = None
 import datetime
 import argparse
-import json
-import xmltodict
 
 
 class AuditFailureDump(object):
@@ -87,7 +85,7 @@ class AuditFailureDump(object):
         """
         try:
             yield win32evtlog.EvtNext(self.hand, 1)[0]
-        except (IndexError,) as e:
+        except (IndexError,):
             pass
 
     def filter_and_write_log(self):
@@ -95,18 +93,14 @@ class AuditFailureDump(object):
         The method will use the read_log_entry method to get the log entries,
         then it will filter for the relevant EventID's and write it into a log.
         """
-        log_entries = []
-        while True:
-            entry = self.read_log_entry()
-            try:
-                rendered_entry = win32evtlog.EvtRender(entry.next(), 1)
-                log_entries.append(xmltodict.parse(rendered_entry))
-            except (StopIteration,):
-                break
-
-            with open("logon_failure.log", "w") as logfile:
-                logfile.write(json.dumps(log_entries, indent=2))
-
+        with open("logon_failure.log", "w") as logfile:
+            while True:
+                entry = self.read_log_entry()
+                try:
+                    rendered_entry = win32evtlog.EvtRender(entry.next(), 1)
+                    logfile.write(str(rendered_entry +"\n"))
+                except (StopIteration,):
+                    break
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="""Software that dumps log
