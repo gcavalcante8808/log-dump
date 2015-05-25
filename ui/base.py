@@ -14,7 +14,8 @@ class BaseGui(object):
         self.builder.add_from_file("gui.glade")
         self.registered_choices = {}
 
-    def _object_picker(self, widget_name):
+    @staticmethod
+    def _object_picker(widget_name):
         """
         Get the instance based on a widget_name passed.
         :param widget_name: The name of the widget got from widget.get_name().
@@ -26,7 +27,8 @@ class BaseGui(object):
         else:
             raise IndexError
 
-    def _register_model_value(self, model, value):
+    @staticmethod
+    def _register_model_value(model, value):
         """
         Receive a value and inserts into the especified dictionary/model.
         :param model: The name of the data model, eg registered choices.
@@ -35,7 +37,8 @@ class BaseGui(object):
         """
         model.update(value)
 
-    def _toggle_fields(self, fields, operation):
+    @staticmethod
+    def _toggle_fields(fields, operation):
         """
         Activates and deactivates some Gtk Fields.
         :param fields: List of Gtk fields.
@@ -49,8 +52,9 @@ class BaseGui(object):
             for field in fields:
                 field.set_property("editable", True)
 
-    def _validate_field(self, field, field_type, status_icon=None,
-                        regexp=None, **kwargs):
+    @staticmethod
+    def _validate_field(field, field_type, status_icon=None, regexp=None,
+                        **kwargs):
         """
         Validate a field accordingly to the field type, as follows:
 
