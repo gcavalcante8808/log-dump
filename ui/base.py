@@ -1,6 +1,5 @@
 import datetime
 from gi.repository import Gtk
-from .register import Register
 
 
 class BaseGui(object):
@@ -36,18 +35,6 @@ class BaseGui(object):
         elif operation == "enable":
             for field in fields:
                 field.set_property("editable", True)
-
-    def _object_picker(self, widget_name):
-        """
-        Get the instance based on a widget_name passed.
-        :param widget_name: The name of the widget got from widget.get_name().
-        :return: A list with all instances that matches the string search.
-        """
-        obj = [obj for obj in Register.instances if obj.name in widget_name]
-        if obj:
-            return obj
-        else:
-            raise IndexError
 
     def _validate_field(self, field, field_type, status_icon=None,
                         regexp=None, **kwargs):

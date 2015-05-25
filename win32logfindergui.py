@@ -7,7 +7,7 @@
 # Licensed under the Apache License, Version 2.0, that can be viewed at:
 # http://www.apache.org/licenses/LICENSE-2.0
 from gi.repository import Gtk
-from ui.register import RegisteredWindow
+from ui.register import RegisteredWindow, Register
 from ui.main import MainWindow
 
 
@@ -27,6 +27,18 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
         self.builder.connect_signals(self)
         self.mainwindow.connect("delete-event", Gtk.main_quit)
         self.mainwindow.show_all()
+
+    def _object_picker(self, widget_name):
+        """
+        Get the instance based on a widget_name passed.
+        :param widget_name: The name of the widget got from widget.get_name().
+        :return: A list with all instances that matches the string search.
+        """
+        obj = [obj for obj in Register.instances if obj.name in widget_name]
+        if obj:
+            return obj
+        else:
+            raise IndexError
 
     def on_registered_changed(self, widget):
         """
