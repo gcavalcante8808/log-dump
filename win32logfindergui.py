@@ -14,7 +14,8 @@ from gi.repository import Gtk
 
 class BaseGui(object):
     """
-    A simple Base Class that will contain information needed by all other classes.
+    A simple Base Class that will contain information needed by all other
+    classes.
     """
     def __init__(self):
         self.builder = Gtk.Builder()
@@ -64,7 +65,8 @@ class BaseGui(object):
         Date: If the string can be converted to datetime, it is validated.
         Time: If the string can be converted to hour/minute, it is validated.
 
-        In all cases, if the field is valid, the correspondent icon of status is updated.
+        In all cases, if the field is valid, the correspondent icon of status
+        is updated.
         """
         validated_data = None
 
@@ -92,8 +94,8 @@ class BaseGui(object):
 
 class MainWindow(BaseGui):
     """
-    The class that holds the main methods for the Main Window of the project, which is used by the Win32LogFinderGui
-    class.
+    The class that holds the main methods for the Main Window of the project,
+    which is used by the Win32LogFinderGui class.
     """
     def __init__(self):
         """
@@ -105,8 +107,8 @@ class MainWindow(BaseGui):
     @abc.abstractmethod
     def on_registered_changed(self, widget):
         """
-        This method has some relationship with the RegisteredWindow Class, and will be implemented on the GUI itself,
-        not here.
+        This method has some relationship with the RegisteredWindow Class, and
+        will be implemented on the GUI itself, not here.
         """
         pass
 
@@ -128,7 +130,8 @@ class MainWindow(BaseGui):
 
 class Register(object):
     """
-    An class that functions as a Interface, containing basic data about the RegisterWindow Fields.
+    An class that functions as a Interface, containing basic data about the
+    RegisterWindow Fields.
     """
     def __init__(self, name):
         """
@@ -167,8 +170,8 @@ class RegisteredWindow(BaseGui):
     """
     def __init__(self):
         """
-        Get the RegisteredWindow from the glade file, instantiate and map Register Class instances  and their fields
-        to the glade Gtk widgets.
+        Get the RegisteredWindow from the glade file, instantiate and map
+        Register Class instances  and their fields to the glade Gtk widgets.
         """
         super(RegisteredWindow, self).__init__()
         self.regwindow = self.builder.get_object("RegisteredWindow")
@@ -178,27 +181,33 @@ class RegisteredWindow(BaseGui):
         self.from_field.choices = self.builder.get_object("from_field_choices")
         self.from_field.field_date = self.builder.get_object("from_field_date")
         self.from_field.field_time = self.builder.get_object("from_field_time")
-        self.from_field.field_date_status = self.builder.get_object("from_date_status")
-        self.from_field.field_time_status = self.builder.get_object("from_time_status")
+        self.from_field.field_date_status = \
+            self.builder.get_object("from_date_status")
+        self.from_field.field_time_status = \
+            self.builder.get_object("from_time_status")
 
         self.to_field = Register(name="to_field")
         self.to_field.model = self.registered_choices
         self.to_field.choices = self.builder.get_object("to_field_choices")
         self.to_field.field_date = self.builder.get_object("to_field_date")
         self.to_field.field_time = self.builder.get_object("to_field_time")
-        self.to_field.field_date_status = self.builder.get_object("to_date_status")
-        self.to_field.field_time_status = self.builder.get_object("to_time_status")
+        self.to_field.field_date_status = \
+            self.builder.get_object("to_date_status")
+        self.to_field.field_time_status = \
+            self.builder.get_object("to_time_status")
 
     def on_register_choice_changed(self, widget):
         """
-        Receive the widget values and write/disable/enables some fields on GtkUI.
+        Receive the widget values and write/disable/enables some fields on GtkUI
 
-        If the user chooses first event or last event, automatic values are writen on instance.model.
+        If the user chooses first event or last event, automatic values are
+        writen on instance.model.
         """
         widget_value = widget.get_active_id()
         instance = self._object_picker(widget.get_name())[0]
 
-        values = {instance.field_date.get_name(): "event", instance.field_time.get_name(): "date"}
+        values = {instance.field_date.get_name(): "event",
+                  instance.field_time.get_name(): "date"}
 
         if "event" in widget_value:
             if values:
@@ -210,24 +219,28 @@ class RegisteredWindow(BaseGui):
 
     def on_field_date_changed(self, widget):
         """
-        Receive Widgets values that comes from date fields on GtkUI and register the value if it is valid.
+        Receive Widgets values that comes from date fields on GtkUI and register
+        the value if it is valid.
         """
         value = widget.get_text()
         instance = self._object_picker(widget.get_name())[0]
-        validated_data = self._validate_field(field=instance.field_date.get_name(), field_type="date", value=value,
-                                              status_icon=instance.field_date_status)
+        validated_data = self._validate_field(
+            field=instance.field_date.get_name(), field_type="date",
+            value=value, status_icon=instance.field_date_status)
 
         if validated_data:
             self._register_model_value(instance.model, validated_data)
 
     def on_field_time_changed(self, widget):
         """
-        Receive Widgets values that comes from time fields on GtkUI and register the value if it is valid.
+        Receive Widgets values that comes from time fields on GtkUI and register
+        the value if it is valid.
         """
         value = widget.get_text()
         instance = self._object_picker(widget.get_name())[0]
-        validated_data = self._validate_field(field=instance.field_time.get_name(), field_type="time", value=value,
-                                              status_icon=instance.field_time_status)
+        validated_data = self._validate_field(
+            field=instance.field_time.get_name(), field_type="time",
+            value=value, status_icon=instance.field_time_status)
 
         if validated_data:
             self._register_model_value(instance.model, validated_data)
@@ -241,8 +254,8 @@ class RegisteredWindow(BaseGui):
 
 class Win32LogFinderGui(MainWindow, RegisteredWindow):
     """
-    The GUI Itself. This class make some use of all resources presented on all other Classes and provide a high
-    level boxing of all GTK resources.
+    The GUI Itself. This class make some use of all resources presented on all
+    other Classes and provide a high level boxing of all GTK resources.
     """
     def __init__(self):
         super(Win32LogFinderGui, self).__init__()
@@ -257,10 +270,11 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
 
     def on_registered_changed(self, widget):
         """
-        This method implements the abstract method presented on the MainWindow Class and uses information from
-        MainWindow and RegisteredWindow. In fact, if the user chooses the personalized choice, a window appears
+        This method implements the abstract method presented on the MainWindow
+        Class and uses information from MainWindow and RegisteredWindow. In
+        fact, if the user chooses the personalized choice, a window appears
         with some options to define de date range of the search.
-        :param widget: The ComboBoxTest Registered Choices that comes from the gui.
+        :param widget: The ComboBoxTest Registered Choices.
         :return: None
         """
         active_id = widget.get_active_id()
