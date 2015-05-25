@@ -61,6 +61,13 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
                 self._register_model_value(self.registered_choices,
                                            validated_data)
 
+    def on_search_clicked(self, widget):
+        values = [value for value in self.__dict__.values()
+                  if type(value) == dict and value]
+
+        for value in values:
+            print(value)
+
 if __name__ == "__main__":
     window = Win32LogFinderGui()
     Gtk.main()
