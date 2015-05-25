@@ -7,7 +7,7 @@
 # Licensed under the Apache License, Version 2.0, that can be viewed at:
 # http://www.apache.org/licenses/LICENSE-2.0
 from gi.repository import Gtk
-from ui.register import RegisteredWindow, Register
+from ui.register import RegisteredWindow
 from ui.main import MainWindow
 
 
