@@ -46,16 +46,16 @@ class AuditFailureDump(object):
         self.end_date = kwargs.pop('end_date')
         self.value = kwargs.pop('value')
         self.ids = kwargs.pop('eventids')
-        
+
         ids_query = ""
         if len(self.ids) > 1:
             for eventid in self.ids:
                 if eventid == self.ids[0]:
-                    ids_query+="[EventID={0} ".format(eventid)
+                    ids_query += "[EventID={0} ".format(eventid)
                 elif eventid == self.ids[-1]:
-                    ids_query+="or EventID={0}]".format(eventid)
+                    ids_query += "or EventID={0}]".format(eventid)
                 else:
-                    ids_query+="or EventID={0}".format(eventid)
+                    ids_query += "or EventID={0}".format(eventid)
         else:
             ids_query = "[EventID={0}]".format(self.ids[0])
 
@@ -107,6 +107,7 @@ class AuditFailureDump(object):
             with open("logon_failure.log", "w") as logfile:
                 logfile.write(json.dumps(log_entries, indent=2))
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="""Software that dumps log
     entries from an Windows Log""")
@@ -120,7 +121,7 @@ if __name__ == '__main__':
                         required=True)
     args = parser.parse_args()
 
-    d = AuditFailureDump(log=args.log, order=args.order, 
+    d = AuditFailureDump(log=args.log, order=args.order,
                          start_date=args.StartDate, end_date=args.EndDate,
                          value=args.value, eventids=args.eventids)
     d.filter_and_write_log()
