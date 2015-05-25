@@ -76,8 +76,9 @@ class BaseGui(object):
                 validated_data = value
 
         elif field_type == "regexp":
-            if regexp.match(kwargs.pop("value")):
-                validated_data = True
+            value = kwargs.pop("value")
+            if regexp.match(value):
+                validated_data = value
         # TODO: STOCK_DIALOG_WARNING_WONT_WORK
         # TODO: DATE AND TIME TYPES SHOULD BE MERGED.
         elif field_type == "date":
