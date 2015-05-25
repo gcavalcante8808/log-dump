@@ -115,6 +115,7 @@ class MainWindow(BaseGui):
 
         self.server_content = self.builder.get_object("server_content")
         self.server_status = self.builder.get_object("server_status")
+        self.server_value = {}
 
     @abc.abstractmethod
     def on_registered_changed(self, widget):
@@ -137,6 +138,9 @@ class MainWindow(BaseGui):
             self._validate_field(value=value, field_type="regexp",
                                  regexp=regexp, status_icon=self.server_status,
                                  field=self.server_content)
+            print(self.server_status.get_stock())
+        if self.server_status.get_stock() is not ('gtk-dialog-warning', 4):
+            self._register_model_value(self.server_value, {"servers": values})
 
     def on_search_clicked(self, widget):
         raise NotImplementedError
