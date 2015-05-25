@@ -59,13 +59,13 @@ class AuditFailureDump(object):
 
         try:
             self.base_time = datetime.datetime.strptime(self.start_date,
-                                                        "%d/%m/%y %H:%M")
+                                                        "%d/%m/%Y %H:%M")
             self.end_time = datetime.datetime.strptime(self.end_date,
-                                                       "%d/%m/%y %H:%M")
+                                                       "%d/%m/%Y %H:%M")
 
         except ValueError as e:
-            print("""The Date Needs to Be in the format: 10/01/15 00:00.
-             Error: {e}""".format(e=e))
+            print("""The Date Needs to Be in the format: 10/01/2015 00:00.
+             Error: {e} ( %dd/%mm/%Y %H:%M)""".format(e=e))
             exit(1)
 
         self.hand = win32evtlog.EvtQuery(self.log, order,
@@ -98,7 +98,7 @@ class AuditFailureDump(object):
                 entry = self.read_log_entry()
                 try:
                     rendered_entry = win32evtlog.EvtRender(entry.next(), 1)
-                    logfile.write(str(rendered_entry +"\n"))
+                    logfile.write(str(rendered_entry + "\n"))
                 except (StopIteration,):
                     break
 
