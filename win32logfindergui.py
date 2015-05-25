@@ -28,18 +28,6 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
         self.mainwindow.connect("delete-event", Gtk.main_quit)
         self.mainwindow.show_all()
 
-    def _object_picker(self, widget_name):
-        """
-        Get the instance based on a widget_name passed.
-        :param widget_name: The name of the widget got from widget.get_name().
-        :return: A list with all instances that matches the string search.
-        """
-        obj = [obj for obj in Register.instances if obj.name in widget_name]
-        if obj:
-            return obj
-        else:
-            raise IndexError
-
     def on_registered_changed(self, widget):
         """
         This method implements the abstract method presented on the MainWindow

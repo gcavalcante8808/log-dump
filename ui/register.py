@@ -1,42 +1,4 @@
-import weakref
-from .base import BaseGui
-
-
-class Register(object):
-    """
-    An class that functions as a Interface, containing basic data about the
-    RegisterWindow Fields.
-    """
-
-    def __init__(self, name):
-        """
-        All instances should be tracked using the name.
-        """
-        self.__class__.instances.append(weakref.proxy(self))
-        self.name = name
-
-    model = None
-    choices = None
-    field_date = None
-    field_time = None
-    field_date_status = None
-    field_time_status = None
-
-    instances = []
-
-    @property
-    def fields(self):
-        """
-        Return the two fields as one.
-        """
-        return self.field_date, self.field_time
-
-    @property
-    def fields_statuses(self):
-        """
-        Return the two field status attrs as one
-        """
-        return self.field_date_status, self.field_time_status
+from .base import BaseGui, Register
 
 
 class RegisteredWindow(BaseGui):

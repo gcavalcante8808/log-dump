@@ -1,4 +1,5 @@
 import datetime
+import weakref
 from gi.repository import Gtk
 
 
@@ -12,6 +13,18 @@ class BaseGui(object):
         self.builder = Gtk.Builder()
         self.builder.add_from_file("gui.glade")
         self.registered_choices = {}
+
+    def _object_picker(self, widget_name):
+        """
+        Get the instance based on a widget_name passed.
+        :param widget_name: The name of the widget got from widget.get_name().
+        :return: A list with all instances that matches the string search.
+        """
+        obj = [obj for obj in Register.instances if obj.name in widget_name]
+        if obj:
+            return obj
+        else:
+            raise IndexError
 
     def _register_model_value(self, model, value):
         """
@@ -95,3 +108,40 @@ class BaseGui(object):
             if status_icon and status_icon.get_stock()[0] != \
                     "gtk-dialog-warning":
                 status_icon.set_from_icon_name(Gtk.STOCK_CLOSE, 4)
+
+
+class Register(object):
+    """
+    An class that functions as a Interface, containing basic data about the
+    RegisterWindow Fields.
+    """
+
+    def __init__(self, name):
+        """
+        All instances should be tracked using the name.
+        """
+        self.__class__.instances.append(weakref.proxy(self))
+        self.name = name
+
+    model = None
+    choices = None
+    field_date = None
+    field_time = None
+    field_date_status = None
+    field_time_status = None
+
+    instances = []
+
+    @property
+    def fields(self):
+        """
+        Return the two fields as one.
+        """
+        return self.field_date, self.field_time
+
+    @property
+    def fields_statuses(self):
+        """
+        Return the two field status attrs as one
+        """
+        return self.field_date_status, self.field_time_status
