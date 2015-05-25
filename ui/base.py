@@ -71,7 +71,10 @@ class BaseGui(object):
         validated_data = None
 
         if field_type == "text":
-            pass
+            value = kwargs.pop("value")
+            if value:
+                validated_data = value
+
         elif field_type == "regexp":
             if regexp.match(kwargs.pop("value")):
                 validated_data = True
