@@ -17,6 +17,9 @@ except ImportError:
     win32evtlog = None
 import datetime
 import argparse
+import xml.etree.cElementTree as ETree
+
+ns = {"ms": "http://schemas.microsoft.com/win/2004/08/events/event"}
 
 
 class AuditFailureDump(object):
@@ -73,7 +76,7 @@ class AuditFailureDump(object):
         date = self.base_time.isoformat()
 
         datecomp = "{0}/TimeCreated[@SystemTime > '{1}']".format(xpath, date) 
-        idscomp = "{0}{1}".format(xpath,ids_query)
+        idscomp = "{0}{1}".format(xpath, ids_query)
 
         self.hand = win32evtlog.EvtQuery(self.log, order, 
                                          datecomp + " and " + idscomp)
@@ -100,12 +103,22 @@ class AuditFailureDump(object):
         The method will use the read_log_entry method to get the log entries,
         then it will filter for the relevant EventID's and write it into a log.
         """
+
         with open("logon_failure.log", "w") as logfile:
             while True:
-                entry = self.read_log_entry()
                 try:
+                    entry = self.read_log_entry()
                     rendered_entry = win32evtlog.EvtRender(entry.next(), 1)
-                    logfile.write(str(rendered_entry + "\n"))
+                    event = ETree.fromstring(rendered_entry)
+                    s = event.find("ms:System/ms:TimeCreated",
+                                   ns).get("SystemTime")
+
+                    systime = datetime.datetime.strptime(s.rsplit(".")[0],
+                                                         "%Y-%m-%dT%H:%M:%S")
+
+                    if self.end_time > systime:
+                        logfile.write(str(rendered_entry + "\n"))
+
                 except (StopIteration, AttributeError):
                     break
 
