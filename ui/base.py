@@ -64,7 +64,7 @@ class BaseGui(object):
         Regexp: If the string matches for the needed regexp, it is validated.
         DeltaTime: If the value provided can match the Difference between
         some hours in DeltaTimeObject python, it is validated.
-
+        Integer, if the field can be converted into INT Type, it its validated.
         In all cases, if the field is valid, the correspondent icon of status
         is updated.
         """
@@ -104,6 +104,13 @@ class BaseGui(object):
                 return {"to_field": validated_data, "from_field": now}
 
             except(ValueError,):
+                pass
+
+        elif field_type == "integer":
+            try:
+                value = kwargs.pop("value")
+                validated_data = int(value)
+            except (ValueError,):
                 pass
 
         if validated_data:
