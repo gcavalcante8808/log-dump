@@ -319,6 +319,7 @@
         </child>
         <child>
           <object class="GtkComboBoxText" id="registered_choices">
+            <property name="name">registered_content</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_top">10</property>

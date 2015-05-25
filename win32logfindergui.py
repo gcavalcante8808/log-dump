@@ -59,15 +59,17 @@ class BaseGui(object):
         else:
             raise IndexError
 
-    def _validate_field(self, field, field_type, value, status_icon,
-                        regexp=None):
+    def _validate_field(self, field, field_type, status_icon=None,
+                        regexp=None, **kwargs):
         """
         Validate a field accordingly to the field type, as follows:
 
         Text: if the field is not null, it is validated.
         Date: If the string can be converted to datetime, it is validated.
         Time: If the string can be converted to hour/minute, it is validated.
-        Regexp: If the string matches for the needed regexp, it validated.
+        Regexp: If the string matches for the needed regexp, it is validated.
+        DeltaTime: If the value provided can match the Difference between
+        some hours in DeltaTimeObject python, it is validated.
 
         In all cases, if the field is valid, the correspondent icon of status
         is updated.
@@ -77,26 +79,44 @@ class BaseGui(object):
         if field_type == "text":
             pass
         elif field_type == "regexp":
-            if regexp.match(value):
+            if regexp.match(kwargs.pop("value")):
                 validated_data = True
         # TODO: STOCK_DIALOG_WARNING_WONT_WORK
+        # TODO: DATE AND TIME TYPES SHOULD BE MERGED.
         elif field_type == "date":
             try:
-                validated_data = datetime.datetime.strptime(value, "%d/%m/%Y")
+                validated_data = datetime.datetime.strptime(kwargs.pop("value"),
+                                                            "%d/%m/%Y")
             except (ValueError,):
                 pass
 
         elif field_type == "time":
             try:
-                validated_data = datetime.datetime.strptime(value, "%H:%M")
+                time = datetime.datetime.strptime(kwargs.pop("value"), "%H:%M")
+                validated_data = datetime.timedelta(hours=time.hour,
+                                                    minutes=time.minute)
+            except(ValueError,):
+                pass
+
+        elif field_type == "timedelta":
+            try:
+                now = datetime.datetime.now()
+                diff = datetime.timedelta(hours=kwargs.pop('hours'),
+                                          minutes=kwargs.pop('minutes'))
+                validated_data = now - diff
+                return {"to_field": validated_data, "from_field": now}
+
             except(ValueError,):
                 pass
 
         if validated_data:
-            status_icon.set_from_icon_name(Gtk.STOCK_APPLY, 4)
+            if status_icon:
+                status_icon.set_from_icon_name(Gtk.STOCK_APPLY, 4)
             return {field: validated_data}
+
         else:
-            if status_icon.get_stock()[0] != "gtk-dialog-warning":
+            if status_icon and status_icon.get_stock()[0] != \
+                    "gtk-dialog-warning":
                 status_icon.set_from_icon_name(Gtk.STOCK_CLOSE, 4)
 
 
@@ -116,6 +136,8 @@ class MainWindow(BaseGui):
         self.server_content = self.builder.get_object("server_content")
         self.server_status = self.builder.get_object("server_status")
         self.server_value = {}
+
+        self.registered_value = {}
 
     @abc.abstractmethod
     def on_registered_changed(self, widget):
@@ -314,8 +336,14 @@ class Win32LogFinderGui(MainWindow, RegisteredWindow):
             self.regwindow.set_transient_for(self.mainwindow)
             self.regwindow.show_all()
         else:
-            self.registered_choices = active_id
-
+            validated_data = self._validate_field(widget.get_name(),
+                                                  field_type="timedelta",
+                                                  status_icon=None,
+                                                  hours=int(active_id),
+                                                  minutes=0)
+            if validated_data:
+                self._register_model_value(self.registered_choices,
+                                           validated_data)
 
 if __name__ == "__main__":
     window = Win32LogFinderGui()
