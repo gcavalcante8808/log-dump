@@ -1,92 +1,277 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# __author__ = '01388863189'
+# __author__ = 'Gabriel Abdalla Cavalcante Silva'
 #
 # Done by Gabriel Abdalla Cavalcante Silva
 #
 # Licensed under the Apache License, Version 2.0, that can be viewed at:
 # http://www.apache.org/licenses/LICENSE-2.0
+import abc
+import datetime
+import weakref
 from gi.repository import Gtk
 
-BOTTOM = Gtk.PositionType.BOTTOM
-RIGHT = Gtk.PositionType.RIGHT
 
-
-class Win32LogFinderGui(Gtk.Window):
-
-    def get_all_values(self, widget):
-        order = self.order_choices.get_active_text()
-        flags = self.flag_choices.get_active_text()
-        start_date = self.sdate_content.get_date()
-        end_date = self.edate_content.get_date()
-        print(order, flags, start_date, end_date)
-
-    def on_combobox_change(self, widget):
-        print(widget.get_active_text(), widget.get_title())
-
-    def on_calendar_change(self, widget):
-        print(widget.get_date(), widget.get_composite_name())
-
+class BaseGui(object):
+    """
+    A simple Base Class that will contain information needed by all other classes.
+    """
     def __init__(self):
-        Gtk.Window.__init__(self, title="Win32LogFinder")
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file("gui.glade")
+        self.registered_choices = {}
 
-        info = Gtk.Label("""Please fill the entries bellow to search and filter
-                         entries in the Windows Eventlog.""")
+    def _register_model_value(self, model, value):
+        """
+        Receive a value and inserts into the especified dictionary/model.
+        :param model: The name of the data model, eg registered choices.
+        :param value: Dictionary to be inserted into the model.
+        :return: None
+        """
+        model.update(value)
 
-        info.set_justify(Gtk.Justification.CENTER)
+    def _toggle_fields(self, fields, operation):
+        """
+        Activates and deactivates some Gtk Fields.
+        :param fields: List of Gtk fields.
+        :param operation: Enable or Disable.
+        :return: None
+        """
+        if operation == "disable":
+            for field in fields:
+                field.set_property("editable", False)
+        elif operation == "enable":
+            for field in fields:
+                field.set_property("editable", True)
 
-        self.log_label = Gtk.Label("Event Log")
-        self.log_content = Gtk.Entry()
-        self.log_content.set_text("Event Log Name")
+    def _object_picker(self, widget_name):
+        """
+        Get the instance based on a widget_name passed.
+        :param widget_name: The name of the widget got from widget.get_name().
+        :return: A list with all instances that matches the string search.
+        """
+        obj = [obj for obj in Register.instances if obj.name in widget_name]
+        if obj:
+            return obj
+        else:
+            raise IndexError
 
-        self.order_label = Gtk.Label("Search Order")
-        self.order_choices = Gtk.ComboBoxText()
-        self.order_choices.set_title("Order")
-        self.order_choices.insert(0, "0", "From the Newest to Oldest")
-        self.order_choices.insert(1, "1", "From the Oldest to Newest")
+    def _validate_field(self, field, field_type, value, status_icon):
+        """
+        Validate a field accordingly to the field type, as follows:
 
-        self.flag_label = Gtk.Label("Event Type")
-        self.flag_choices = Gtk.ComboBoxText()
-        self.flag_choices.set_title("Flag")
-        self.flag_choices.insert(0, "0", "EVENTLOG_ERROR_TYPE")
-        self.flag_choices.insert(1, "1", "EVENTLOG_WARNING_TYPE")
-        self.flag_choices.insert(2, "2", "EVENTLOG_INFORMATION_TYPE")
-        self.flag_choices.insert(3, "3", "EVENTLOG_AUDIT_SUCCESS")
-        self.flag_choices.insert(4, "4", "EVENTLOG_AUDIT_FAILURE")
+        Text: if the field is not null, it is validated.
+        Date: If the string can be converted to datetime, it is validated.
+        Time: If the string can be converted to hour/minute, it is validated.
 
-        self.sdate_label = Gtk.Label("Start Period")
-        self.sdate_content = Gtk.Calendar()
-        self.sdate_content.set_composite_name = "StartDate"
+        In all cases, if the field is valid, the correspondent icon of status is updated.
+        """
+        validated_data = None
 
-        self.edate_label = Gtk.Label("End Period")
-        self.edate_content = Gtk.Calendar()
-        self.edate_content.set_composite_name = "EndDate"
+        if field_type == "text":
+            pass
+        #TODO: STOCK_DIALOG_WARNING_WONT_WORK
+        elif field_type == "date":
+            try:
+                validated_data = datetime.datetime.strptime(value, "%d/%m/%Y")
+            except (ValueError,):
+                if status_icon.get_stock()[0] != "gtk-dialog-warning":
+                    status_icon.set_from_icon_name(Gtk.STOCK_DIALOG_WARNING, 4)
 
-        self.action_button = Gtk.Button(label="Start Search")
-        self.action_button.connect("clicked", self.get_all_values)
+        elif field_type == "time":
+            try:
+                validated_data = datetime.datetime.strptime(value, "%H:%M")
+            except(ValueError,):
+                if status_icon.get_stock()[0] != "gtk-dialog-warning":
+                    status_icon.set_from_icon_name(Gtk.STOCK_CLOSE, 4)
 
-        grid = Gtk.Grid(row_spacing=25, column_spacing=20)
-        self.add(grid)
+        if validated_data:
+            status_icon.set_from_icon_name(Gtk.STOCK_APPLY, 4)
+            return {field: validated_data}
 
-        grid.add(info)
-        grid.attach(self.log_label, 0, 1, 1, 1)
-        grid.attach_next_to(self.log_content, self.log_label, RIGHT, 1, 1)
 
-        grid.attach_next_to(self.order_label, self.log_label, BOTTOM, 1, 1)
-        grid.attach_next_to(self.order_choices, self.order_label, RIGHT, 1, 1)
+class MainWindow(BaseGui):
+    """
+    The class that holds the main methods for the Main Window of the project, which is used by the Win32LogFinderGui
+    class.
+    """
+    def __init__(self):
+        """
+        Just Get the Main Window object from the glade file.
+        """
+        super(MainWindow, self).__init__()
+        self.mainwindow = self.builder.get_object("MainWindow")
 
-        grid.attach_next_to(self.flag_label, self.order_label, BOTTOM, 1, 1)
-        grid.attach_next_to(self.flag_choices, self.flag_label, RIGHT, 1, 1)
+    @abc.abstractmethod
+    def on_registered_changed(self, widget):
+        """
+        This method has some relationship with the RegisteredWindow Class, and will be implemented on the GUI itself,
+        not here.
+        """
+        pass
 
-        grid.attach_next_to(self.sdate_label, self.flag_label, BOTTOM, 1, 1)
-        grid.attach_next_to(self.sdate_content, self.sdate_label, RIGHT, 1, 1)
+    def on_delete_window(self, widget):
+        Gtk.main_quit()
 
-        grid.attach_next_to(self.edate_label, self.sdate_label, BOTTOM, 1, 1)
-        grid.attach_next_to(self.edate_content, self.edate_label, RIGHT, 1, 1)
+    def on_search_clicked(self, widget):
+        raise NotImplementedError
 
-        grid.attach_next_to(self.action_button, self.edate_label, BOTTOM, 2, 1)
+    def on_clear_clicked(self, widget):
+        raise NotImplementedError
 
-win = Win32LogFinderGui()
-win.connect("delete-event", Gtk.main_quit)
-win.show_all()
-Gtk.main()
+    def on_about_activated(self, widget):
+        raise NotImplementedError
+
+    def on_search_order_cb_changed(self, widget):
+        raise NotImplementedError
+
+
+class Register(object):
+    """
+    An class that functions as a Interface, containing basic data about the RegisterWindow Fields.
+    """
+    def __init__(self, name):
+        """
+        All instances should be tracked using the name.
+        """
+        self.__class__.instances.append(weakref.proxy(self))
+        self.name = name
+
+    model = None
+    choices = None
+    field_date = None
+    field_time = None
+    field_date_status = None
+    field_time_status = None
+
+    instances = []
+
+    @property
+    def fields(self):
+        """
+        Return the two fields as one.
+        """
+        return self.field_date, self.field_time
+
+    @property
+    def fields_statuses(self):
+        """
+        Return the two field status attrs as one
+        """
+        return self.field_date_status, self.field_time_status
+
+
+class RegisteredWindow(BaseGui):
+    """
+    Contain all information about the DateRange Dialog - Registered Window.
+    """
+    def __init__(self):
+        """
+        Get the RegisteredWindow from the glade file, instantiate and map Register Class instances  and their fields
+        to the glade Gtk widgets.
+        """
+        super(RegisteredWindow, self).__init__()
+        self.regwindow = self.builder.get_object("RegisteredWindow")
+
+        self.from_field = Register(name="from_field")
+        self.from_field.model = self.registered_choices
+        self.from_field.choices = self.builder.get_object("from_field_choices")
+        self.from_field.field_date = self.builder.get_object("from_field_date")
+        self.from_field.field_time = self.builder.get_object("from_field_time")
+        self.from_field.field_date_status = self.builder.get_object("from_date_status")
+        self.from_field.field_time_status = self.builder.get_object("from_time_status")
+
+        self.to_field = Register(name="to_field")
+        self.to_field.model = self.registered_choices
+        self.to_field.choices = self.builder.get_object("to_field_choices")
+        self.to_field.field_date = self.builder.get_object("to_field_date")
+        self.to_field.field_time = self.builder.get_object("to_field_time")
+        self.to_field.field_date_status = self.builder.get_object("to_date_status")
+        self.to_field.field_time_status = self.builder.get_object("to_time_status")
+
+    def on_register_choice_changed(self, widget):
+        """
+        Receive the widget values and write/disable/enables some fields on GtkUI.
+
+        If the user chooses first event or last event, automatic values are writen on instance.model.
+        """
+        widget_value = widget.get_active_id()
+        instance = self._object_picker(widget.get_name())[0]
+
+        values = {instance.field_date.get_name(): "event", instance.field_time.get_name(): "date"}
+
+        if "event" in widget_value:
+            if values:
+                self._register_model_value(instance.model, values)
+                self._toggle_fields(instance.fields, operation="disable")
+
+        elif "date" in widget_value:
+            self._toggle_fields(instance.fields, operation="enable")
+
+    def on_field_date_changed(self, widget):
+        """
+        Receive Widgets values that comes from date fields on GtkUI and register the value if it is valid.
+        """
+        value = widget.get_text()
+        instance = self._object_picker(widget.get_name())[0]
+        validated_data = self._validate_field(field=instance.field_date.get_name(), field_type="date", value=value,
+                                              status_icon=instance.field_date_status)
+
+        if validated_data:
+            self._register_model_value(instance.model, validated_data)
+
+    def on_field_time_changed(self, widget):
+        """
+        Receive Widgets values that comes from time fields on GtkUI and register the value if it is valid.
+        """
+        value = widget.get_text()
+        instance = self._object_picker(widget.get_name())[0]
+        validated_data = self._validate_field(field=instance.field_time.get_name(), field_type="time", value=value,
+                                              status_icon=instance.field_time_status)
+
+        if validated_data:
+            self._register_model_value(instance.model, validated_data)
+
+    def on_rwindow_ok_button_clicked(self, widget):
+        """
+        Stub for now.
+        """
+        print(self.registered_choices)
+
+
+class Win32LogFinderGui(MainWindow, RegisteredWindow):
+    """
+    The GUI Itself. This class make some use of all resources presented on all other Classes and provide a high
+    level boxing of all GTK resources.
+    """
+    def __init__(self):
+        super(Win32LogFinderGui, self).__init__()
+
+        #Show all Icons in the software.
+        settings = Gtk.Settings.get_default()
+        settings.props.gtk_button_images = True
+
+        self.builder.connect_signals(self)
+        self.mainwindow.connect("delete-event", Gtk.main_quit)
+        self.mainwindow.show_all()
+
+    def on_registered_changed(self, widget):
+        """
+        This method implements the abstract method presented on the MainWindow Class and uses information from
+        MainWindow and RegisteredWindow. In fact, if the user chooses the personalized choice, a window appears
+        with some options to define de date range of the search.
+        :param widget: The ComboBoxTest Registered Choices that comes from the gui.
+        :return: None
+        """
+        active_id = widget.get_active_id()
+        if active_id == "anytime":
+            raise NotImplementedError
+        elif active_id == "personalized":
+            self.regwindow.set_transient_for(self.mainwindow)
+            self.regwindow.show_all()
+        else:
+            self.registered_choices = active_id
+
+if __name__ == "__main__":
+    window = Win32LogFinderGui()
+    Gtk.main()
