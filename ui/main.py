@@ -17,11 +17,14 @@ class MainWindow(BaseGui):
         super(MainWindow, self).__init__()
         self.mainwindow = self.builder.get_object("MainWindow")
 
-        self.server_content = self.builder.get_object("server_content")
         self.server_status = self.builder.get_object("server_status")
-        self.server_value = {}
+        self.eventids_status = self.builder.get_object("eventids_status")
 
+        self.servers = {}
         self.log = {}
+        self.eventids ={}
+
+        self.order = {}
 
     @abc.abstractmethod
     def on_registered_changed(self, widget):
@@ -44,15 +47,17 @@ class MainWindow(BaseGui):
         for value in values:
             self._validate_field(value=value, field_type="regexp",
                                  regexp=regexp, status_icon=self.server_status,
-                                 field=self.server_content)
+                                 field=widget.get_name())
 
         if self.server_status.get_stock() is not ('gtk-dialog-warning', 4):
-            self._register_model_value(self.server_value, {"servers": values})
+            self._register_model_value(self.servers, {"servers": values})
 
     def on_eventlog_content_activate(self, widget):
         value = widget.get_text()
+        regexp = re.compile(r'[A-Za-z\-]')
         validated_data = self._validate_field(field=widget.get_name(),
-                                              field_type="text",
+                                              field_type="regexp",
+                                              regexp=regexp,
                                               value=value)
 
         if validated_data:
@@ -69,5 +74,30 @@ class MainWindow(BaseGui):
     def on_about_activated(self, widget):
         raise NotImplementedError
 
+    def on_eventid_content_changed(self, widget):
+        values = widget.get_text().rsplit(",")
+        regexp = re.compile(r"\d+")
+        validated_data = None
+
+        for value in values:
+            validated_data = self._validate_field(field=widget.get_name(),
+                                                  field_type="regexp",
+                                                  regexp=regexp, status_icon=
+                                                  self.eventids_status,
+                                                  value=value)
+
+        if self.server_status.get_stock() is not ('gtk-dialog-warning', 4):
+                self._register_model_value(self.eventids,
+                                           {widget.get_name(): values})
+
     def on_search_order_cb_changed(self, widget):
-        raise NotImplementedError
+        value = widget.get_active_id()
+        regexp = re.compile(r'[A-Za-z\-]')
+        validated_data = self._validate_field(field=widget.get_name(),
+                                              field_type="regexp",
+                                              regexp=regexp,
+                                              value=value)
+
+        if validated_data:
+
+            self._register_model_value(self.order, {"order": value})
