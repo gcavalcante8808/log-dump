@@ -372,9 +372,11 @@
         </child>
         <child>
           <object class="GtkEntry" id="eventid_content">
+            <property name="name">eventid_content</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="margin_top">10</property>
+            <signal name="changed" handler="on_eventid_content_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -398,7 +400,7 @@
               <object class="GtkEntry" id="eventlog_content">
                 <property name="name">eventlog_level_content</property>
                 <property name="can_focus">False</property>
-                <signal name="activate" handler="on_eventlog_content_activate" swapped="no"/>
+                <signal name="changed" handler="on_eventlog_content_activate" swapped="no"/>
               </object>
             </child>
           </object>
@@ -484,6 +486,7 @@
         </child>
         <child>
           <object class="GtkComboBoxText" id="search_order_cb">
+            <property name="name">search_order_content</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="active_id">from-end</property>
@@ -516,7 +519,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image2">
+          <object class="GtkImage" id="eventids_status">
+            <property name="name">eventids_status</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_top">10</property>
