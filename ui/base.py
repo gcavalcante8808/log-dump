@@ -1,4 +1,6 @@
+import datetime
 from gi.repository import Gtk
+from .register import Register
 
 
 class BaseGui(object):
