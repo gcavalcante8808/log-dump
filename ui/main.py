@@ -23,8 +23,8 @@ class MainWindow(BaseGui):
         self.servers = {}
         self.log = {}
         self.eventids ={}
-
         self.order = {}
+
 
     @abc.abstractmethod
     def on_registered_changed(self, widget):
@@ -79,6 +79,7 @@ class MainWindow(BaseGui):
         regexp = re.compile(r"\d+")
         validated_data = None
 
+        #TODO: Verificar se a regexp está funcionando corretamente.
         for value in values:
             validated_data = self._validate_field(field=widget.get_name(),
                                                   field_type="regexp",
