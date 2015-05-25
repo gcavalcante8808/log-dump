@@ -60,7 +60,6 @@ class AuditFailureDump(object):
         else:
             ids_query = "[EventID={0}]".format(self.ids[0])
 
-        
         try:
             self.base_time = datetime.datetime.strptime(self.start_date,
                                                         "%d/%m/%Y %H:%M")
