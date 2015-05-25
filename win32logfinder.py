@@ -57,6 +57,7 @@ class AuditFailureDump(object):
         else:
             ids_query = "[EventID={0}]".format(self.ids[0])
 
+        
         try:
             self.base_time = datetime.datetime.strptime(self.start_date,
                                                         "%d/%m/%Y %H:%M")
@@ -68,8 +69,14 @@ class AuditFailureDump(object):
              Error: {e} ( %dd/%mm/%Y %H:%M)""".format(e=e))
             exit(1)
 
-        self.hand = win32evtlog.EvtQuery(self.log, order,
-                                         "Event/System{0}".format(ids_query))
+        xpath = "Event/System"
+        date = self.base_time.isoformat()
+
+        datecomp = "{0}/TimeCreated[@SystemTime > '{1}']".format(xpath, date) 
+        idscomp = "{0}{1}".format(xpath,ids_query)
+
+        self.hand = win32evtlog.EvtQuery(self.log, order, 
+                                         datecomp + " and " + idscomp)
 
     def convert_time(self, pytime):
         """
@@ -99,7 +106,7 @@ class AuditFailureDump(object):
                 try:
                     rendered_entry = win32evtlog.EvtRender(entry.next(), 1)
                     logfile.write(str(rendered_entry + "\n"))
-                except (StopIteration,):
+                except (StopIteration, AttributeError):
                     break
 
 if __name__ == '__main__':
