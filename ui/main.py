@@ -22,6 +22,7 @@ class MainWindow(BaseGui):
         self.server_value = {}
 
         self.registered_value = {}
+        self.log = {}
 
     @abc.abstractmethod
     def on_registered_changed(self, widget):
@@ -31,7 +32,8 @@ class MainWindow(BaseGui):
         """
         pass
 
-    def on_delete_window(self, widget):
+    @staticmethod
+    def on_delete_window(widget):
         Gtk.main_quit()
 
     def on_server_content_changed(self, widget):
@@ -47,6 +49,15 @@ class MainWindow(BaseGui):
             print(self.server_status.get_stock())
         if self.server_status.get_stock() is not ('gtk-dialog-warning', 4):
             self._register_model_value(self.server_value, {"servers": values})
+
+    def on_eventlog_content_activate(self, widget):
+        value = widget.get_text()
+        validated_data = self._validate_field(field=widget.get_name(),
+                                              field_type="text",
+                                              value=value)
+
+        if validated_data:
+            self._register_model_value(self.log, validated_data)
 
     def on_search_clicked(self, widget):
         raise NotImplementedError

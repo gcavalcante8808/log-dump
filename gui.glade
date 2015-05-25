@@ -384,7 +384,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkComboBoxText" id="eventlog_level_content">
+          <object class="GtkComboBoxText" id="eventlog">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="has_entry">True</property>
@@ -395,8 +395,10 @@
               <item id="Application" translatable="yes">Application</item>
             </items>
             <child internal-child="entry">
-              <object class="GtkEntry" id="comboboxtext-entry">
+              <object class="GtkEntry" id="eventlog_content">
+                <property name="name">eventlog_level_content</property>
                 <property name="can_focus">False</property>
+                <signal name="activate" handler="on_eventlog_content_activate" swapped="no"/>
               </object>
             </child>
           </object>
