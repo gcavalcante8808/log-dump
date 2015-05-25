@@ -454,7 +454,12 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_eventid_content_changed" object="eventid_content" swapped="no"/>
+                <signal name="clicked" handler="on_eventlog_content_activate" object="eventlog_content" swapped="no"/>
+                <signal name="clicked" handler="on_registered_changed" object="registered_choices" swapped="no"/>
                 <signal name="clicked" handler="on_search_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_search_order_cb_changed" object="search_order_cb" swapped="no"/>
+                <signal name="clicked" handler="on_server_content_changed" object="server_content" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
