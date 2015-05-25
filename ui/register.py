@@ -14,6 +14,8 @@ class RegisteredWindow(BaseGui):
         super(RegisteredWindow, self).__init__()
         self.regwindow = self.builder.get_object("RegisteredWindow")
 
+        self.registered_choices = {}
+
         self.from_field = Register(name="from_field")
         self.from_field.model = self.registered_choices
         self.from_field.choices = self.builder.get_object("from_field_choices")
@@ -85,6 +87,6 @@ class RegisteredWindow(BaseGui):
 
     def on_rwindow_ok_button_clicked(self, widget):
         """
-        Stub for now.
+        TODO:Stub for now.
         """
-        print(self.registered_choices)
+        raise NotImplementedError
